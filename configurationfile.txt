@@ -1,0 +1,48 @@
+@Configuration
+@EnableTransactionManagement
+@EnableJpaRepositories(basePackages = {"com.controller","com.controller.configure"})
+@ComponentScan(basePackages = "com.controller")
+public class PageConfigure {
+
+	  @Bean
+	    public InternalResourceViewResolver viewResolver() {
+	        InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+	        resolver.setPrefix("/");
+	        resolver.setSuffix(".jsp");
+	        return resolver;
+	    }
+	  
+	  @Bean
+	  public DataSource datasource() {
+		 DriverManagerDataSource datasource=new DriverManagerDataSource();
+		 datasource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+		 datasource.setUrl("jdbc:mysql://localhost:3306/emp");
+		 datasource.setUsername("root");
+		 datasource.setPassword("Indir@437");
+		 return datasource;
+	  }
+	  
+	  @Bean
+	  public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
+		  LocalContainerEntityManagerFactoryBean factory=new LocalContainerEntityManagerFactoryBean();
+		  factory.setDataSource(dataSource);
+		  factory.setPackagesToScan("com.controller","com.controller.configure");
+		  factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+		  
+		  Properties properties=new Properties();
+		  properties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+		  properties.put("hibernate.dialect.storage_engine", "MyISAM");
+		  properties.put("hibernate.hbm2ddl.auto", "update");
+		  properties.put("hibernate.show_sql", "true");
+		  factory.setJpaProperties(properties);
+		  
+		  return factory;
+		  
+	  }
+	  
+	    @Bean
+	    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+	        JpaTransactionManager transactionManager = new JpaTransactionManager();
+	        transactionManager.setEntityManagerFactory(entityManagerFactory);
+	        return transactionManager;
+	    }
